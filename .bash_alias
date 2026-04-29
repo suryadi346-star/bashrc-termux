@@ -1,0 +1,236 @@
+#!/data/data/com.termux/files/usr/bin/bash                        # ~/.bash_alias - User specific aliases for Termux
+
+# ============================================                    # SYSTEM & COLOR SETTINGS                                         # ============================================
+                                                                  # Set default editor
+export EDITOR='nano'
+
+# Color support for core utilities
+alias ls='ls --color=auto --group-directories-first'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias diff='diff --color=auto'
+
+# ============================================
+# NAVIGATION ALIASES
+# ============================================
+
+# Directory navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# Quick directory listing after cd
+cd() {
+  # Simpan hasil cd
+  builtin cd "$@" 2>/dev/null
+
+  # Jika cd gagal, coba dengan tilde expansion
+  if [ $? -ne 0 ]; then
+    # Coba expand ~ jika ada
+    if [[ "$1" == ~* ]]; then
+      builtin cd "$1" 2>/dev/null || {
+        echo "cd: $1: No such file or directory" >&2
+        return 1
+      }
+    else
+      echo "cd: $@: No such file or directory" >&2
+      return 1
+    fi
+  fi
+  # Jalankan ls jika berhasil
+  command -v ls >/dev/null 2>&1 && ls --color=auto 2>/dev/null
+}
+
+# Go back to previous directory
+alias back='cd -'
+--() { cd -; }
+
+
+
+# ============================================
+# LISTING ALIASES
+# ============================================
+
+# Enhanced ls commands
+alias ll='ls -lFh'
+alias la='ls -AlFh'
+alias l='ls -R'
+alias l1='ls -1F'
+alias l1m='ls -1F | more'
+alias lh='ls -ld .??*'
+alias lsn='ls | cat -n'
+alias lt='ls -lt'
+alias ltr='ls -ltr'
+alias lsize='ls -laSh'
+
+# tree
+alias tree='tree -C --dirsfirst'
+
+# ============================================
+# FILE OPERATIONS
+# ============================================
+
+# Safe file operations
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+alias mkdir='mkdir -pv'
+alias rmdir='rmdir -pv'
+
+# Advanced copy
+alias cpv='cp -v'
+alias cpr='cp -R'
+alias cpp='rsync -ah --progress'
+
+# ============================================
+# SYSTEM INFORMATION
+# ============================================
+
+# Disk and memory
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+alias meminfo='free -mlth'
+
+# Process management
+alias psa='ps aux'
+alias psg='ps aux | grep -v grep | grep -i'
+alias pstop='ps aux --sort=-%cpu | head -10'
+alias psmem='ps aux --sort=-%mem | head -10'
+
+# Network
+alias myip='curl -s ifconfig.me'
+alias myip4='curl -4 ifconfig.me'
+alias myip6='curl -6 ifconfig.me'
+alias ports='netstat -tulanp'
+alias ping='ping -c 5'
+alias pingg='ping -c 5 8.8.8.8'
+
+# ============================================
+# TERMUX SPECIFIC
+# ============================================
+
+# Package management shortcuts
+alias update='pkg update && pkg upgrade'
+alias install='pkg install'
+alias remove='pkg remove'
+alias search='pkg search'
+alias listin='pkg list-installed'
+alias listall='pkg list-all'
+alias show='pkg show'
+
+# Termux file management
+alias storage='cd /storage/emulated/0'
+alias sdcard='cd /sdcard'
+alias termux-config='nano $PREFIX/etc/bash.bashrc'
+alias reload='source $PREFIX/etc/bash.bashrc'
+
+# ============================================
+# DEVELOPMENT & TOOLS
+# ============================================
+
+# Python
+alias python='python3'
+alias py='python3'
+alias phttp='python3 -m http.server 8000'
+alias pserve='python3 -m http.server'
+
+# Git shortcuts
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit -m "$1'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate'
+
+# Text processing
+alias count='find . -type f | wc -l'
+alias countlines='find . -type f -name "*.py" -exec wc -l {} + | tail -1'
+alias findbig="find . -type f -size +100M -exec ls -lh {} \;"
+
+# ============================================
+# UTILITIES
+# ============================================
+
+# Clear screen variations
+alias c='clear'
+alias cla='clear && ls -a'
+alias cl='clear && ls -R'
+alias cls='clear && ls'
+alias cs='printf "\033c"'  # Clear scrollback buffer
+
+# Date and time
+alias now='date +"%T"'
+alias today='date +"%A, %d %B %Y"'
+alias timestamp='date +"%Y%m%d_%H%M%S"'
+
+# Security
+alias genpass='openssl rand -base64 16'
+alias genpass12='openssl rand -base64 12'
+alias genpass20='openssl rand -base64 20'
+
+# Archive operations
+alias untar='tar -xzvf'
+alias targz='tar -czvf'
+alias zipdir='zip -r'
+
+# Download utilities
+alias wget='wget -c'
+alias curlj='curl -s'
+
+# ============================================
+# APPLICATION SHORTCUTS
+# ============================================
+
+# Edit config files
+alias edit-alias='nano ~/.bash_aliases'
+alias edit-bashrc='nano $PREFIX/etc/bash.bashrc'
+alias edit-vimrc='nano ~/.vimrc'
+alias edit-nanorc='nano ~/.nanorc'
+
+# Quick access
+alias h='history'
+alias h-c='history -c'
+alias j-l='jobs -l'
+
+# Search
+alias findfile='find . -type f -name'
+alias finddir='find . -type d -name'
+alias grepi='grep -ri'
+
+# ============================================
+# FUN & MISC
+# ============================================
+alias login-ubuntu='proot-distro login ubuntu'
+alias login-alpine='proot-distro login alpine'
+
+# Weather (requires curl)
+alias weather='curl -s "wttr.in/?format=3"'
+
+# Random directory name
+alias randir='mkdir -p ./$(head /dev/urandom | tr -cd "a-z0-9" | head -c 8)'
+
+# System info summary
+alias sysinfo='echo "=== System Information ===" && \
+               echo "OS: $(uname -o)" && \
+               echo "Kernel: $(uname -r)" && \
+               echo "Arch: $(uname -m)" && \
+               echo "Hostname: $(hostname)" && \
+               echo "User: $(whoami)" && \
+               echo "Shell: $SHELL" && \
+               echo "Terminal: $TERM"'
+
+# ============================================
+# NOTES:
+# ============================================
+# 1. Some aliases may require additional packages:
+#    - sensors: pkg install procps
+#    - tree: pkg install tree
+#    - htop: pkg install htop
+#    - ncdu: pkg install ncdu
+#
+# 2. To use these aliases, reload with:
+#    source ~/.bash_aliases
+#    or restart Termux
+#
+# 3. Add your own custom aliases at the bottom
